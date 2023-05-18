@@ -4,7 +4,7 @@ namespace App\Services;
 use Illuminate\Support\Facades\DB;
 
 class DecileService {
-    public static function decile($subQuery, $type) {
+    public static function decile($subQuery) {
         //1. 購入ID毎にまとめる
         $subQuery = $subQuery->groupBy('id')
             ->selectRaw('id, customer_id, customer_name, 

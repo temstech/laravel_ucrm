@@ -16,25 +16,33 @@ const form = reactive({
     startDate: null,
     endDate: null,
     type: 'perDay',
+    rfmPrms: [
+        14,28,60,90,7,5,3,2,300000,200000,100000,30000
+    ],
+    rfmType: 'rf',
 })
 
 const data = reactive({})
 
-const getData = async () => {
+const getData = async() => {
     try {
         await axios.get('api/analysis/', {
             params: {
                 startDate: form.startDate,
                 endDate: form.endDate,
                 type: form.type,
+                rfmPrms: form.rfmPrms,
+                rfmType: form.rfmType,
             }
         })
         .then(res => {
+            console.log(res.data)
             data.data = res.data.data
-            data.labels = res.data.labels
+            if(res.data.labels) { data.labels = res.data.labels }
+            if(res.data.eachCount) { data.eachCount = res.data.eachCount }
             data.totals = res.data.totals
             data.type = res.data.type
-            console.log(res.data)
+            if(res.data.rfmType) { data.rfmType = res.data.rfmType }
         })
     } catch(e) {
         console.log(e.message)
@@ -57,19 +65,66 @@ const getData = async () => {
                         <form @submit.prevent="getData">
                             <div>
                                 分析方法<br>
-                                <input type="radio" v-model="form.type" value="perDay" checked><span class="mr-2">日別</span>
-                                <input type="radio" v-model="form.type" value="perMonth"><span class="mr-2">月別</span>
-                                <input type="radio" v-model="form.type" value="perYear"><span class="mr-2">年別</span>
-                                <input type="radio" v-model="form.type" value="decile"><span class="mr-2">デシル分析</span><br>
-
-                                <span class="mr-4">From: <input type="date" name="startDate" v-model="form.startDate"></span>
-                                <span>To: <input type="date" name="endDate" v-model="form.endDate"></span>
+                                <input type="radio" v-model="form.type" value="perDay" checked><span class="ml-1 mr-2">日別</span>
+                                <input type="radio" v-model="form.type" value="perMonth"><span class="ml-1 mr-4">月別</span>
+                                <input type="radio" v-model="form.type" value="perYear"><span class="ml-1 mr-4">年別</span>
+                                <input type="radio" v-model="form.type" value="decile"><span class="ml-1 mr-4">デシル分析</span>
+                                <input type="radio" v-model="form.type" value="rfm"><span class="ml-1 mr-4">RFM分析</span><br>
+                                <div class="mt-4">
+                                    <span class="mr-4">From: <input type="date" name="startDate" v-model="form.startDate"></span>
+                                    <span>To: <input type="date" name="endDate" v-model="form.endDate"></span>
+                                </div>
+                                <div v-if="form.type === 'rfm'">
+                                    <div class="my-4 mx-auto text-center">
+                                        <input type="radio" v-model="form.rfmType" value="rf" checked><span class="ml-1 mr-2">R-F集計</span>
+                                        <input type="radio" v-model="form.rfmType" value="rm"><span class="ml-1 mr-4">R-M集計</span>
+                                        <input type="radio" v-model="form.rfmType" value="fm"><span class="ml-1 mr-4">F-M集計</span>
+                                    </div>
+                                    <table class="mx-auto my-4">
+                                        <thead>
+                                            <tr>
+                                                <th>ランク</th>
+                                                <th>R（〇日以上）</th>
+                                                <th>F（〇回以上）</th>
+                                                <th>M（〇円以上）</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>5</td>
+                                                <td><input type="number" v-model="form.rfmPrms[0]"></td>
+                                                <td><input type="number" v-model="form.rfmPrms[4]"></td>
+                                                <td><input type="number" v-model="form.rfmPrms[8]"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>4</td>
+                                                <td><input type="number" v-model="form.rfmPrms[1]"></td>
+                                                <td><input type="number" v-model="form.rfmPrms[5]"></td>
+                                                <td><input type="number" v-model="form.rfmPrms[9]"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>3</td>
+                                                <td><input type="number" v-model="form.rfmPrms[2]"></td>
+                                                <td><input type="number" v-model="form.rfmPrms[6]"></td>
+                                                <td><input type="number" v-model="form.rfmPrms[10]"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>2</td>
+                                                <td><input type="number" v-model="form.rfmPrms[3]"></td>
+                                                <td><input type="number" v-model="form.rfmPrms[7]"></td>
+                                                <td><input type="number" v-model="form.rfmPrms[11]"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                             <button class="flex justify-center mx-auto mt-2 text-white bg-teal-500 border-0 py-2 px-8 focus:outline-none hover:bg-teal-600 rounded text-lg">分析する</button>
                         </form>
                         
                         <div v-show="data.data">
-                            <Chart :data="data" />
+                            <div v-if="data.type != 'rfm'">
+                                <Chart :data="data" />
+                            </div>
                             <ResultTable :data="data" />
                         </div>
                     </div>
