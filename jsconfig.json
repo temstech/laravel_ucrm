@@ -5,6 +5,7 @@
         "paths": {
             "@/*": ["resources/js/*"]
         },
+        "checkJs": false,
     },
     "exclude": ["node_modules", "public"]
 }

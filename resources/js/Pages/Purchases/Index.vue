@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/inertia-vue3';
 import FlashMessage from "@/Components/FlashMessage.vue";
 import Pagination from '@/Components/Pagination.vue';
 import { Inertia } from "@inertiajs/inertia";

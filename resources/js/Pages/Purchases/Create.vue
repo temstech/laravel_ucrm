@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/inertia-vue3';
 import { onMounted, reactive, ref, computed } from "vue";
 import { Inertia } from "@inertiajs/inertia";
 import BreezeValidationErrors from '@/Components/ValidationErrors.vue'
